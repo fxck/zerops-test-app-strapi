@@ -1,0 +1,22 @@
+
+name: Build and deploy to zerops.io
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2     
+    - name: install, build, deploy  
+      env: 
+        ZEROPSLOGIN: ${{ secrets.ZEROPSLOGIN }}       
+        ZEROPSPASSWORD: ${{ secrets.ZEROPSPASSWORD }}        
+      run: |
+        npm ci
+        npm run build
+        wget -O zcli cli.zerops.dev/latest/linux && chmod +x zcli
+        ./zcli login
+        ./zcli deploy test-app strapi .
